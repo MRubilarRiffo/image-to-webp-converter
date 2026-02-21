@@ -2,14 +2,29 @@
 
 import { useState, useCallback } from 'react';
 import { FiUploadCloud } from 'react-icons/fi';
+import { toast } from 'sonner';
 import styles from './Dropzone.module.css';
 import { handleFileDrop } from '@/lib/utils';
 
-export default function Dropzone({ setImages, setMessage, isConverting }) {
+export default function Dropzone({ setImages, isConverting }) {
     const [isDragging, setIsDragging] = useState(false);
 
-    const handleDrop = useCallback((acceptedFiles) => {
-        setMessage({ type: '', text: '' });
+    const handleDrop = useCallback((acceptedFiles, rejectedFiles) => {
+        if (rejectedFiles && rejectedFiles.length > 0) {
+            rejectedFiles.forEach(({ file, reason }) => {
+                if (reason === 'size_limit_exceeded') {
+                    toast.error(`"${file.name}" supera el límite de 4.5MB.`);
+                } else if (reason === 'invalid_type') {
+                    toast.error(`"${file.name}" no es una imagen válida.`);
+                }
+            });
+        }
+
+        if (acceptedFiles.length === 0) {
+            setIsDragging(false);
+            return;
+        }
+
         acceptedFiles.forEach(file => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -31,7 +46,7 @@ export default function Dropzone({ setImages, setMessage, isConverting }) {
             reader.readAsDataURL(file);
         });
         setIsDragging(false);
-    }, [setImages, setMessage]);
+    }, [setImages]);
 
     const onDragOver = (e) => {
         e.preventDefault();

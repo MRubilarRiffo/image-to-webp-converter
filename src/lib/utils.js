@@ -11,10 +11,22 @@ export const handleFileDrop = (e, callback) => {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-    const acceptedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    if (acceptedFiles.length > 0) {
-        callback(acceptedFiles);
-    }
+
+    const MAX_SIZE = 4.5 * 1024 * 1024; // 4.5 MB limit for Vercel Free Serverless
+    const acceptedFiles = [];
+    const rejectedFiles = [];
+
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) {
+            rejectedFiles.push({ file, reason: 'invalid_type' });
+        } else if (file.size > MAX_SIZE) {
+            rejectedFiles.push({ file, reason: 'size_limit_exceeded' });
+        } else {
+            acceptedFiles.push(file);
+        }
+    });
+
+    callback(acceptedFiles, rejectedFiles);
 };
 
 export const readFileEntry = (fileEntry, path, filesArray) => {

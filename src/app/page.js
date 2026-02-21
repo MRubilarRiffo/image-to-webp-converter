@@ -5,12 +5,13 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { FiLoader, FiX, FiImage } from 'react-icons/fi';
 
+import { toast } from 'sonner';
+
 import styles from './page.module.css';
 
 import Dropzone from '@/components/Dropzone/Dropzone';
 import ImageList from '@/components/ImageList/ImageList';
 import Options from '@/components/Options/Options';
-import Message from '@/components/Message/Message';
 
 export default function Home() {
   const [images, setImages] = useState([]);
@@ -22,7 +23,7 @@ export default function Home() {
   const [keepAspectRatio, setKeepAspectRatio] = useState(true);
   const [keepOriginalResolution, setKeepOriginalResolution] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
+  const [convertedCount, setConvertedCount] = useState(0);
 
   const handleRemoveImage = useCallback((index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
@@ -30,7 +31,6 @@ export default function Home() {
 
   const handleClear = useCallback(() => {
     setImages([]);
-    setMessage({ type: '', text: '' });
   }, []);
 
   const processSingleImage = async (image) => {
@@ -67,50 +67,78 @@ export default function Home() {
     return { blob, fileName: newFileName };
   }
 
+  const handleDownloadSingle = async (index) => {
+    const img = images[index];
+    if (!img) return;
+
+    const loadingId = toast.loading(`Convirtiendo ${img.name}...`);
+    setIsConverting(true);
+    try {
+      const { blob, fileName } = await processSingleImage(img);
+      saveAs(blob, fileName);
+      toast.success('¡Conversión exitosa!', { id: loadingId });
+    } catch (error) {
+      toast.error(`Error: ${error.message}`, { id: loadingId });
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
   const handleConvert = async () => {
     if (images.length === 0) {
-      setMessage({ type: 'error', text: 'Por favor, sube al menos una imagen.' });
+      toast.error('Por favor, sube al menos una imagen.');
       return;
     }
 
     setIsConverting(true);
-    setMessage({ type: '', text: '' });
+    setConvertedCount(0);
 
     try {
-      // Procesamos las imágenes en paralelo usando la API Serverless (1 a 1 para evitar limites de timeout/payload)
-      const processedImages = await Promise.all(
-        images.map(img => processSingleImage(img))
+      await toast.promise(
+        (async () => {
+          // Procesamos las imágenes en paralelo usando la API Serverless (1 a 1 para evitar limites de timeout/payload)
+          const processedImages = await Promise.all(
+            images.map(img => processSingleImage(img).then(res => {
+              // Actualizamos contador de barra de progreso visual por archivo convertido
+              setConvertedCount(prev => prev + 1);
+              return res;
+            }))
+          );
+
+          if (processedImages.length === 1) {
+            // Descarga individual
+            const { blob, fileName } = processedImages[0];
+            saveAs(blob, fileName);
+          } else {
+            // Descarga Múltiple (Armamos el ZIP en el navegador con JSZip)
+            const zip = new JSZip();
+
+            processedImages.forEach(({ blob, fileName }, index) => {
+              // Prevenir nombres duplicados en el zip
+              const uniqueFileName = zip.file(fileName)
+                ? `${fileName.split('.')[0]}_${index}.${format}`
+                : fileName;
+
+              zip.file(uniqueFileName, blob);
+            });
+
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            saveAs(zipBlob, 'converted_images.zip');
+          }
+
+          setImages([]);
+        })(),
+        {
+          loading: 'Procesando imágenes...',
+          success: '¡Conversión exitosa! La descarga ha comenzado automáticamente.',
+          error: (err) => `Error: ${err.message}`
+        }
       );
-
-      if (processedImages.length === 1) {
-        // Descarga individual
-        const { blob, fileName } = processedImages[0];
-        saveAs(blob, fileName);
-      } else {
-        // Descarga Múltiple (Armamos el ZIP en el navegador con JSZip)
-        const zip = new JSZip();
-
-        processedImages.forEach(({ blob, fileName }, index) => {
-          // Prevenir nombres duplicados en el zip
-          const uniqueFileName = zip.file(fileName)
-            ? `${fileName.split('.')[0]}_${index}.${format}`
-            : fileName;
-
-          zip.file(uniqueFileName, blob);
-        });
-
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        saveAs(zipBlob, 'converted_images.zip');
-      }
-
-      setMessage({ type: 'success', text: '¡Conversión exitosa! La descarga ha comenzado automáticamente.' });
-      setImages([]);
-
     } catch (error) {
       console.error(error);
-      setMessage({ type: 'error', text: `Error: ${error.message}` });
     } finally {
       setIsConverting(false);
+      setConvertedCount(0);
     }
   };
 
@@ -124,11 +152,8 @@ export default function Home() {
             <p className={styles.subtitle}>Convierte a WebP y AVIF ultra-rápido en Next.js</p>
           </header>
 
-          <Message message={message} />
-
           <Dropzone
             setImages={setImages}
-            setMessage={setMessage}
             isConverting={isConverting}
           />
 
@@ -150,7 +175,7 @@ export default function Home() {
               className={`${styles.convertBtn} ${images.length === 0 || isConverting ? styles.btnDisabled : ''}`}
             >
               {isConverting ? (
-                <><FiLoader className={styles.spinner} /> Convirtiendo...</>
+                <><FiLoader className={styles.spinner} /> Convirtiendo ({convertedCount}/{images.length})...</>
               ) : (
                 'Convertir y Descargar'
               )}
@@ -181,6 +206,8 @@ export default function Home() {
               <ImageList
                 images={images}
                 onRemove={handleRemoveImage}
+                onDownload={handleDownloadSingle}
+                isConverting={isConverting}
               />
             )}
           </div>
