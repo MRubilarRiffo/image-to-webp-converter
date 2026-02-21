@@ -1,0 +1,101 @@
+.dropzone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 14rem;
+    /* Un poco mas compacto para dar aire en mobile */
+    background-color: rgba(24, 24, 27, 0.4);
+    /* zinc-900 con baja opacidad */
+    border-radius: 1rem;
+    border: 1px dashed rgba(82, 82, 91, 0.8);
+    /* zinc-600 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+@media (min-width: 640px) {
+    .dropzone {
+        height: 16rem;
+    }
+}
+
+.dropzone:hover {
+    background-color: rgba(39, 39, 42, 0.5);
+    /* zinc-800 */
+    border-color: rgba(161, 161, 170, 0.8);
+    /* zinc-400 */
+}
+
+.dropzone.dragging {
+    border-color: #fafafa;
+    /* Blanco */
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+    /* Menos agresivo que antes */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.inputHidden {
+    display: none;
+}
+
+.label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    cursor: inherit;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    filter: grayscale(1);
+}
+
+.icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    color: #71717a;
+    /* zinc-500 */
+    transition: color 0.3s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dropzone:hover .icon {
+    color: #e4e4e7;
+    /* zinc-200 */
+    transform: translateY(-4px);
+}
+
+.dragging .icon {
+    color: #ffffff;
+    transform: translateY(-8px) scale(1.1);
+}
+
+.title {
+    margin-top: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #e4e4e7;
+    /* zinc-200 */
+    transition: color 0.3s;
+}
+
+.dragging .title {
+    color: #ffffff;
+    /* emerald-400 */
+}
+
+.subtitle {
+    color: #a1a1aa;
+    /* zinc-400 */
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}

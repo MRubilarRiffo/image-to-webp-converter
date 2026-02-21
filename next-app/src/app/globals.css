@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --bg-color-main: #000000;
+  /* Pure Black */
+  --text-main: #fafafa;
+  /* Off-white for crisp contrast */
+  /* Elegant Accent Colors - Monochromatic / Silver tones */
+  --accent-primary: #3f3f46;
+  /* zinc-700 */
+  --accent-hover: #52525b;
+  /* zinc-600 */
+  --glass-bg: rgba(9, 9, 11, 0.6);
+  /* zinc-950/60 */
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  background-color: var(--bg-color-main);
+  color: var(--text-main);
+  /* Sutil gradiente para no ser totalmente plano, pero manteniendo el negro */
+  background-image: radial-gradient(circle at 50% 0%, #18181b 0%, #000000 60%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

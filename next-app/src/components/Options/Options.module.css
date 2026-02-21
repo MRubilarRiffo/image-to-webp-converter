@@ -1,0 +1,125 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .container {
+        /* En tablet se divide en 2 */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        /* En Escritorio se divide en 3 */
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #a1a1aa;
+    /* zinc-400 */
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.input,
+.select {
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.6rem;
+    background-color: rgba(9, 9, 11, 0.6);
+    /* zinc-950 translúcido */
+    color: #fafafa;
+    /* zinc-50 */
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    background-color: rgba(24, 24, 27, 0.8);
+    /* zinc-900 */
+    border-color: #52525b;
+    /* zinc-600 */
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+/* Custom dropdown background for options */
+.select option {
+    background-color: #09090b;
+    /* zinc-950 */
+    color: #fafafa;
+}
+
+.input:disabled,
+.select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgba(9, 9, 11, 0.3);
+    color: #71717a;
+    /* zinc-500 */
+    border-color: transparent;
+}
+
+.checkboxGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+@media (min-width: 1024px) {
+    .checkboxGroup {
+        /* Para que los checks se alineen bien en la grilla de 3 */
+        grid-column: span 1;
+        justify-content: center;
+        padding-top: 1.5rem;
+    }
+}
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.checkboxContainer:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.checkbox {
+    margin-right: 0.75rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: #fafafa;
+    /* Blanco */
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.checkboxLabel {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #d4d4d8;
+    /* zinc-300 */
+    cursor: pointer;
+    user-select: none;
+}

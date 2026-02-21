@@ -1,0 +1,38 @@
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+/* Success Styles */
+.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    /* emerald-500/10 */
+    color: #6ee7b7;
+    /* emerald-300 */
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Error Styles */
+.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    /* red-500/10 */
+    color: #fca5a5;
+    /* red-300 */
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.text {
+    margin: 0;
+}
