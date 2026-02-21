@@ -1,0 +1,16 @@
+Conversión de Next.js a Aplicación de Escritorio con Electron
+
+**Impacto Alto:**
+- `main.js`: Creado proceso maestro de Electron. Se implementó un servidor Node nativo utilizando `net` para asignar dinámicamente un puerto puerto local e inicializar la versión precompilada (standalone) de la aplicación React/Next.js. 
+- `hooks/afterPack.js`: Creado gancho de compilación nativo. Inyecta el directorio `node_modules` en la versión de producción e incluye forzosamente el binario de compatibilidad de la librería en C++ `sharp` para procesar imágenes correctamente en entornos Win32 desde el binario comprimido `app.asar`.
+
+**Impacto Medio:**
+- `package.json`: Acondicionado proyecto para empaquetado. 
+  - Añadidas las dependencias `electron` y `electron-builder`
+  - Incluidos los comandos de script `electron:dev` y `electron:build`. 
+  - Definida la configuración para desempaquetar las librerías nativas `asarUnpack: ["**/*.node"]` para Sharp.
+  - Asegurada la instalación de `sharp` explícitamente para OS win32 prevenida.
+- `next.config.mjs`: Habilitado `output: 'standalone'` para permitir la abstracción limpia del servidor Node de cara a Electron.
+
+**Impacto Bajo:**
+- `.gitignore`: Añadidas carpetas residuales de empaquetado como `/dist`.
